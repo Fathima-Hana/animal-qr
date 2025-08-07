@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Goat | Goat ID System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-paw me-2"></i>Goat ID System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-search me-1"></i> Lookup</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="add.html"><i class="fas fa-plus-circle me-1"></i> Add Goat</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h3><i class="fas fa-plus-circle me-2"></i><span id="formTitle">Add New Goat</span></h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="animalForm">
+                                <input type="hidden" id="editMode" value="false">
+                                <input type="hidden" id="originalTagId">
+
+                                <h4 class="mb-4">Basic Information</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="formAnimalName" class="form-label">Goat Name</label>
+                                        <input type="text" class="form-control" id="formAnimalName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="formTagId" class="form-label">ID Tag Number</label>
+                                        <input type="text" class="form-control" id="formTagId" required>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="formBreed" class="form-label">Breed</label>
+                                        <input type="text" class="form-control" id="formBreed" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="formGender" class="form-label">Sex</label>
+                                        <select class="form-select" id="formGender" required>
+                                            <option value="">Select Sex</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Male">Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="formDob" class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" id="formDob" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="formColor" class="form-label">Color/Markings</label>
+                                        <input type="text" class="form-control" id="formColor" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Goat Photo</label>
+                                        <div class="upload-btn-wrapper">
+                                            <button class="upload-btn">
+                                                <i class="fas fa-camera"></i> Choose Photo
+                                            </button>
+                                            <input type="file" id="formAnimalImage" accept="image/*">
+                                        </div>
+                                        <div class="file-info" id="formFileInfo">No file selected</div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <div class="image-upload-container">
+                                            <div class="image-preview-container" id="formPreviewContainer">
+                                                <div class="upload-placeholder">
+                                                    <i class="fas fa-image"></i>
+                                                    <div>Goat Photo Preview</div>
+                                                </div>
+                                                <img id="formImagePreview" class="image-preview"
+                                                    alt="Goat photo preview">
+                                                <button class="remove-image-btn" id="formRemoveImageBtn">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h4 class="mb-4 mt-5">Ownership Information</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="formOwnerName" class="form-label">Owner Name</label>
+                                        <input type="text" class="form-control" id="formOwnerName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="formOwnerContact" class="form-label">Contact Number</label>
+                                        <input type="tel" class="form-control" id="formOwnerContact" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="formOwnerAddress" class="form-label">Address</label>
+                                    <textarea class="form-control" id="formOwnerAddress" rows="2" required></textarea>
+                                </div>
+
+                                <h4 class="mb-4 mt-5">Health Information</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="formHealthStatus" class="form-label">Health Status</label>
+                                        <select class="form-select" id="formHealthStatus" required>
+                                            <option value="Healthy">Healthy</option>
+                                            <option value="Warning">Needs Attention</option>
+                                            <option value="Critical">Critical</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="formLastCheckup" class="form-label">Last Vet Check</label>
+                                        <input type="date" class="form-control" id="formLastCheckup">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="formLastDewormed" class="form-label">Last Dewormed</label>
+                                        <input type="date" class="form-control" id="formLastDewormed">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="formMedicalNotes" class="form-label">Medical Notes</label>
+                                    <textarea class="form-control" id="formMedicalNotes" rows="2"></textarea>
+                                </div>
+
+                                <h4 class="mb-4 mt-5">Breeding Information</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="formSireId" class="form-label">Sire ID (Father)</label>
+                                        <input type="text" class="form-control" id="formSireId">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="formDamId" class="form-label">Dam ID (Mother)</label>
+                                        <input type="text" class="form-control" id="formDamId">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="formBreedingStatus" class="form-label">Breeding Status</label>
+                                        <select class="form-select" id="formBreedingStatus">
+                                            <option value="Not applicable">Not applicable</option>
+                                            <option value="Not pregnant">Not pregnant</option>
+                                            <option value="Pregnant">Pregnant</option>
+                                            <option value="Active breeder">Active breeder</option>
+                                            <option value="Retired">Retired</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="formLastBreeding" class="form-label">Last Breeding Date</label>
+                                        <input type="date" class="form-control" id="formLastBreeding">
+                                    </div>
+                                </div>
+
+                                <h4 class="mb-4 mt-5">Location & Management</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="formCurrentLocation" class="form-label">Current Location</label>
+                                        <input type="text" class="form-control" id="formCurrentLocation">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="formHerdName" class="form-label">Group Name</label>
+                                        <input type="text" class="form-control" id="formHerdName">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="formFeedType" class="form-label">Feed Type</label>
+                                        <input type="text" class="form-control" id="formFeedType">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="formLocationNotes" class="form-label">Special Notes</label>
+                                        <input type="text" class="form-control" id="formLocationNotes">
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="formSubmitBtn">
+                                        <i class="fas fa-save me-2"></i><span id="submitBtnText">Save Goat Record</span>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="loading-spinner" id="formLoadingSpinner"></div>
+
+                            <div id="formSuccessContainer" class="text-center mt-4" style="display: none;">
+                                <div class="qr-code-container">
+                                    <div id="formQrCode"></div>
+                                    <button class="btn btn-primary" id="formDownloadQR">
+                                        <i class="fas fa-download me-2"></i>Download QR Code
+                                    </button>
+                                </div>
+                                <div class="alert alert-success mt-3">
+                                    <h4><i class="fas fa-check-circle me-2"></i>Goat Record Saved Successfully!</h4>
+                                    <p class="mb-0">You can now use this QR code to quickly access this goat's
+                                        information.</p>
+                                </div>
+                                <button class="btn btn-outline-primary mt-2" id="backToLookup">
+                                    <i class="fas fa-search me-2"></i>Lookup Goat
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/add-goat.js"></script>
+</body>
+
+</html>
