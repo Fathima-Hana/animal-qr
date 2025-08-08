@@ -1,20 +1,429 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goat ID Lookup System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #388E3C;
+            --accent-color: #8BC34A;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4bb543;
+            --error-color: #ff3333;
+            --animal-card-bg: #ffffff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            color: var(--dark-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            background-color: var(--animal-card-bg);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 1.5rem;
+            border-bottom: none;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.25rem rgba(139, 195, 74, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-scan {
+            background-color: var(--accent-color);
+            color: var(--dark-color);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-scan:hover {
+            background-color: #7CB342;
+            transform: translateY(-2px);
+        }
+        
+        .input-group-text {
+            background-color: var(--light-color);
+            border: 2px solid #e9ecef;
+            border-right: none;
+        }
+        
+        /* New Camera Modal Styles */
+        .camera-modal .modal-content {
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+        }
 
+        .camera-container {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            position: relative;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scan-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scan-box {
+            width: 200px;
+            height: 200px;
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.4; }
+            100% { opacity: 0.7; }
+        }
+
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+        }
+
+        .camera-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-scan {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-switch {
+            background: #e0e0e0;
+            color: var(--dark-color);
+        }
+
+        .btn-close-cam {
+            background: var(--error-color);
+            color: white;
+        }
+        
+        #result-container {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animal-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .animal-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .animal-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .animal-id {
+            font-size: 1rem;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+        
+        .animal-details {
+            width: 100%;
+        }
+        
+        .detail-card {
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .detail-card-header {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+        }
+        
+        .detail-card-body {
+            padding: 1.25rem;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 0.75rem;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            width: 150px;
+            color: #495057;
+        }
+        
+        .detail-value {
+            flex: 1;
+            color: #212529;
+        }
+        
+        .health-status {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .status-healthy {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-critical {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .vaccine-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .vaccine-current {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .vaccine-due {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .vaccine-overdue {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 3rem;
+            height: 3rem;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+        
+        /* Timeline for medical history */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: 2px solid white;
+        }
+        
+        .timeline-date {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .timeline-content {
+            background-color: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .animal-image {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .animal-name {
+                font-size: 1.5rem;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+            }
+            
+            .detail-label {
+                width: 100%;
+                margin-bottom: 0.25rem;
+            }
+        }
+    </style>
+</head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="#">
                 <i class="fas fa-paw me-2"></i>Goat ID System
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -23,10 +432,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="index.html"><i class="fas fa-search me-1"></i> Lookup</a>
+                        <a class="nav-link active" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="add.html"><i class="fas fa-plus-circle me-1"></i> Add Goat</a>
+                        <a class="nav-link" href="#">Goats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Veterinary</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -46,21 +461,17 @@
                             <div class="text-center mb-4">
                                 <div class="qr-icon">
                                     <i class="fas fa-qrcode" style="font-size: 3rem; color: var(--primary-color);"></i>
-                                    <i class="fas fa-paw"
-                                        style="font-size: 2rem; margin-left: -15px; color: #ff758f;"></i>
+                                    <i class="fas fa-paw" style="font-size: 2rem; margin-left: -15px; color: #ff758f;"></i>
                                 </div>
                                 <h4>Search Goat Records</h4>
-                                <p class="text-muted">Enter goat ear tag ID manually or scan the QR code to retrieve
-                                    full details</p>
+                                <p class="text-muted">Enter goat ear tag ID manually or scan the QR code to retrieve full details</p>
                             </div>
-
+                            
                             <div class="mb-4">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="animalIdInput"
-                                        placeholder="Enter Goat Ear Tag ID or QR Code">
-                                    <button class="btn btn-scan" id="scanBtn" data-bs-toggle="modal"
-                                        data-bs-target="#cameraModal">
+                                    <input type="text" class="form-control" id="animalIdInput" placeholder="Enter Goat Ear Tag ID or QR Code">
+                                    <button class="btn btn-scan" id="scanBtn" data-bs-toggle="modal" data-bs-target="#cameraModal">
                                         <i class="fas fa-camera me-2"></i>Scan QR
                                     </button>
                                 </div>
@@ -70,11 +481,150 @@
                                     </button>
                                 </div>
                             </div>
-
+                            
                             <div class="loading-spinner" id="loadingSpinner"></div>
-
+                            
                             <div id="result-container">
-                                <!-- Results will be loaded here -->
+                                <!-- Animal Profile Section -->
+                                <div class="animal-profile">
+                                    <img src="" alt="Goat Image" class="animal-image" id="animalImage">
+                                    <h2 class="animal-name" id="animalName">Goat Name</h2>
+                                    <div class="animal-id" id="animalId">Ear Tag: GT-2023-001</div>
+                                </div>
+                                
+                                <!-- Basic Information Card -->
+                                <div class="detail-card mb-4">
+                                    <div class="detail-card-header">
+                                        <i class="fas fa-info-circle me-2"></i>Basic Information
+                                    </div>
+                                    <div class="detail-card-body">
+                                        <div class="detail-row">
+                                            <div class="detail-label">Tag ID:</div>
+                                            <div class="detail-value" id="animalTagId">GT-2023-001</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Breed:</div>
+                                            <div class="detail-value" id="animalBreed">Boer</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Sex:</div>
+                                            <div class="detail-value" id="animalGender">Female</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Date of Birth:</div>
+                                            <div class="detail-value" id="animalDob">March 15, 2021</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Age:</div>
+                                            <div class="detail-value" id="animalAge">2 years</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Color/Markings:</div>
+                                            <div class="detail-value" id="animalColor">White with brown head</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Owner:</div>
+                                            <div class="detail-value" id="ownerName">John Doe</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Health Information Card -->
+                                <div class="detail-card mb-4">
+                                    <div class="detail-card-header">
+                                        <i class="fas fa-heartbeat me-2"></i>Health Information
+                                    </div>
+                                    <div class="detail-card-body">
+                                        <div class="detail-row">
+                                            <div class="detail-label">Health Status:</div>
+                                            <div class="detail-value">
+                                                <span class="health-status status-healthy" id="healthStatus">Healthy</span>
+                                            </div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Vaccinations:</div>
+                                            <div class="detail-value" id="vaccinations">
+                                                <span class="vaccine-badge vaccine-current">CD&T (Current)</span>
+                                                <span class="vaccine-badge vaccine-due">Rabies (Due 10/2023)</span>
+                                            </div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Last Dewormed:</div>
+                                            <div class="detail-value" id="lastDewormed">June 5, 2023</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Last Vet Check:</div>
+                                            <div class="detail-value" id="lastCheckup">May 15, 2023</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Veterinarian:</div>
+                                            <div class="detail-value" id="vetName">Dr. Sarah Williams</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Medical Notes:</div>
+                                            <div class="detail-value" id="medicalNotes">Healthy weight, good condition. Recommended routine deworming in 3 months.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Breeding Information Card -->
+                                <div class="detail-card mb-4">
+                                    <div class="detail-card-header">
+                                        <i class="fas fa-dna me-2"></i>Breeding Information
+                                    </div>
+                                    <div class="detail-card-body">
+                                        <div class="detail-row">
+                                            <div class="detail-label">Sire ID:</div>
+                                            <div class="detail-value" id="sireId">GT-2020-012</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Dam ID:</div>
+                                            <div class="detail-value" id="damId">GT-2019-045</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Breeding Status:</div>
+                                            <div class="detail-value" id="breedingStatus">Not pregnant</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Last Breeding Date:</div>
+                                            <div class="detail-value" id="lastBreeding">N/A</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Offspring Count:</div>
+                                            <div class="detail-value" id="offspringCount">3</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Location Information Card -->
+                                <div class="detail-card mb-4">
+                                    <div class="detail-card-header">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Location & Management
+                                    </div>
+                                    <div class="detail-card-body">
+                                        <div class="detail-row">
+                                            <div class="detail-label">Current Location:</div>
+                                            <div class="detail-value" id="currentLocation">Pasture 3</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Herd:</div>
+                                            <div class="detail-value" id="herdName">Doe Group B</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Feed Type:</div>
+                                            <div class="detail-value" id="feedType">Pasture + Supplemental Grain</div>
+                                        </div>
+                                        <div class="detail-row">
+                                            <div class="detail-label">Special Notes:</div>
+                                            <div class="detail-value" id="locationNotes">Prefers shade during hot afternoons</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- System Information -->
+                                <div class="text-end mt-3">
+                                    <small class="text-muted" id="timestamp">Last updated: June 15, 2023 14:30</small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,7 +633,7 @@
         </div>
     </div>
 
-    <!-- Camera Modal -->
+    <!-- QR Scanner Modal (New Version) -->
     <div class="modal fade camera-modal" id="cameraModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -121,11 +671,258 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- QR Scanner Library -->
     <script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.4.1/qr-scanner.min.js"></script>
-    <script src="assets/js/main.js"></script>
-</body>
+    
+    <script>
+        $(document).ready(function() {
+            let qrScanner = null;
+            let currentFacingMode = 'environment';
+            
+            // Lookup button click handler
+            $('#lookupBtn').click(function() {
+                const animalId = $('#animalIdInput').val().trim();
+                
+                if (!animalId) {
+                    showError('Please enter a goat ear tag ID or scan a QR code');
+                    return;
+                }
+                
+                lookupGoat(animalId);
+            });
+            
+            // Scan button click handler
+            $('#scanBtn').click(function() {
+                startScanner();
+            });
+            
+            // Switch Camera
+            $('#switchCamera').click(function() {
+                stopScanner();
+                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+                startScanner();
+            });
 
+            // Close Camera
+            $('#closeCamera').click(function() {
+                $('#cameraModal').modal('hide');
+                stopScanner();
+            });
+
+            // Start Scanner
+            function startScanner() {
+                const videoElem = document.getElementById('cameraVideo');
+                
+                qrScanner = new QrScanner(
+                    videoElem,
+                    result => {
+                        $('#animalIdInput').val(result);
+                        $('#cameraModal').modal('hide');
+                        lookupGoat(result);
+                    },
+                    {
+                        preferredCamera: currentFacingMode,
+                        highlightScanRegion: true,
+                        highlightCodeOutline: true,
+                        maxScansPerSecond: 5
+                    }
+                );
+                
+                qrScanner.start();
+            }
+
+            // Stop Scanner
+            function stopScanner() {
+                if (qrScanner) {
+                    qrScanner.stop();
+                    qrScanner = null;
+                }
+            }
+            
+            // Function to lookup goat in database (simulated)
+            function lookupGoat(animalId) {
+                $('#loadingSpinner').show();
+                $('#result-container').hide();
+                
+                // Simulate API call with timeout
+                setTimeout(function() {
+                    $('#loadingSpinner').hide();
+                    
+                    // Mock database - replace with actual API call
+                    const mockDatabase = {
+                        "GT-2023-001": {
+                            image: "https://images.unsplash.com/photo-1583845112203-293299023c0e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                            name: "Daisy",
+                            tagId: "GT-2023-001",
+                            breed: "Boer",
+                            gender: "Female",
+                            dob: "March 15, 2021",
+                            age: "2 years",
+                            color: "White with brown head",
+                            ownerName: "John Doe",
+                            ownerContact: "(555) 123-4567",
+                            ownerAddress: "123 Farm Road, Countryside, CS 12345",
+                            healthStatus: "Healthy",
+                            lastCheckup: "May 15, 2023",
+                            lastDewormed: "June 5, 2023",
+                            vetName: "Dr. Sarah Williams",
+                            medicalNotes: "Healthy weight, good condition. Recommended routine deworming in 3 months.",
+                            vaccines: [
+                                { name: "CD&T", status: "current", dueDate: "2024" },
+                                { name: "Rabies", status: "due", dueDate: "10/2023" }
+                            ],
+                            sireId: "GT-2020-012",
+                            damId: "GT-2019-045",
+                            breedingStatus: "Not pregnant",
+                            lastBreeding: "N/A",
+                            offspringCount: "3",
+                            currentLocation: "Pasture 3",
+                            herdName: "Doe Group B",
+                            feedType: "Pasture + Supplemental Grain",
+                            locationNotes: "Prefers shade during hot afternoons"
+                        },
+                        "GT-2023-002": {
+                            image: "https://images.unsplash.com/photo-1551290464-66719418ca54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                            name: "Billy",
+                            tagId: "GT-2023-002",
+                            breed: "Alpine",
+                            gender: "Male",
+                            dob: "January 10, 2022",
+                            age: "1.5 years",
+                            color: "Black and white",
+                            ownerName: "Jane Smith",
+                            ownerContact: "(555) 987-6543",
+                            ownerAddress: "456 Ranch Road, Countryside, CS 67890",
+                            healthStatus: "Healthy",
+                            lastCheckup: "April 20, 2023",
+                            lastDewormed: "May 10, 2023",
+                            vetName: "Dr. Michael Chen",
+                            medicalNotes: "Excellent condition. Good breeding potential.",
+                            vaccines: [
+                                { name: "CD&T", status: "current", dueDate: "2024" },
+                                { name: "Rabies", status: "current", dueDate: "2025" }
+                            ],
+                            sireId: "GT-2018-078",
+                            damId: "GT-2019-102",
+                            breedingStatus: "Active breeder",
+                            lastBreeding: "June 1, 2023",
+                            offspringCount: "12",
+                            currentLocation: "Buck Pen A",
+                            herdName: "Breeding Males",
+                            feedType: "Grain + Hay",
+                            locationNotes: "Dominant male in group"
+                        }
+                    };
+                    
+                    if (mockDatabase[animalId]) {
+                        const data = mockDatabase[animalId];
+                        showGoatDetails(data);
+                    } else {
+                        showError('Goat ear tag ID not found in database');
+                    }
+                }, 1500);
+            }
+            
+            // Function to display goat details
+            function showGoatDetails(data) {
+                // Set basic information
+                $('#animalImage').attr('src', data.image);
+                $('#animalName').text(data.name);
+                $('#animalId').text('Ear Tag: ' + data.tagId);
+                $('#animalTagId').text(data.tagId);
+                $('#animalBreed').text(data.breed);
+                $('#animalGender').text(data.gender);
+                $('#animalDob').text(data.dob);
+                $('#animalAge').text(data.age);
+                $('#animalColor').text(data.color);
+                $('#ownerName').text(data.ownerName);
+                
+                // Set health information
+                const healthStatus = $('#healthStatus');
+                healthStatus.removeClass('status-healthy status-warning status-critical');
+                
+                if (data.healthStatus.toLowerCase() === 'healthy') {
+                    healthStatus.addClass('status-healthy').text('Healthy');
+                } else if (data.healthStatus.toLowerCase() === 'warning') {
+                    healthStatus.addClass('status-warning').text('Needs Attention');
+                } else {
+                    healthStatus.addClass('status-critical').text('Critical');
+                }
+                
+                $('#lastCheckup').text(data.lastCheckup);
+                $('#lastDewormed').text(data.lastDewormed);
+                $('#vetName').text(data.vetName);
+                $('#medicalNotes').text(data.medicalNotes);
+                
+                // Set vaccines
+                const vaccinesContainer = $('#vaccinations');
+                vaccinesContainer.empty();
+                
+                data.vaccines.forEach(vaccine => {
+                    let badgeClass = 'vaccine-current';
+                    if (vaccine.status === 'due') badgeClass = 'vaccine-due';
+                    if (vaccine.status === 'overdue') badgeClass = 'vaccine-overdue';
+                    
+                    vaccinesContainer.append(
+                        `<span class="vaccine-badge ${badgeClass}">${vaccine.name} (${vaccine.status === 'current' ? 'Current' : 'Due ' + vaccine.dueDate})</span>`
+                    );
+                });
+                
+                // Set breeding information
+                $('#sireId').text(data.sireId);
+                $('#damId').text(data.damId);
+                $('#breedingStatus').text(data.breedingStatus);
+                $('#lastBreeding').text(data.lastBreeding);
+                $('#offspringCount').text(data.offspringCount);
+                
+                // Set location information
+                $('#currentLocation').text(data.currentLocation);
+                $('#herdName').text(data.herdName);
+                $('#feedType').text(data.feedType);
+                $('#locationNotes').text(data.locationNotes);
+                
+                // Set timestamp
+                const now = new Date();
+                $('#timestamp').text('Last updated: ' + now.toLocaleString());
+                
+                $('#result-container').fadeIn();
+                
+                // Scroll to results
+                $('html, body').animate({
+                    scrollTop: $('#result-container').offset().top - 20
+                }, 500);
+            }
+            
+            // Function to display error
+            function showError(message) {
+                $('#result-container').html(`
+                    <div class="card error-card">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                            <h4 class="card-title">Goat Not Found</h4>
+                            <p class="card-text">${message}</p>
+                            <p class="text-muted">Please check the ear tag ID and try again</p>
+                        </div>
+                    </div>
+                `);
+                
+                const now = new Date();
+                $('#timestamp').text('Last checked: ' + now.toLocaleString());
+                
+                $('#result-container').fadeIn();
+            }
+            
+            // Handle Enter key in input field
+            $('#animalIdInput').keypress(function(e) {
+                if (e.which === 13) {
+                    $('#lookupBtn').click();
+                }
+            });
+        });
+    </script>
+</body>
 </html>
